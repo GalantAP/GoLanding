@@ -209,7 +209,7 @@
                     <label for="remember">Remember me</label>
                 </div>
 
-                <button type="submit" class="btn btn-login btn-primary">Login</button>
+                <button type="submit" class="btn-login btn-primary">Login</button>
             </form>
 
             <div class="divider">or</div>
