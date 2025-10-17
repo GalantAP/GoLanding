@@ -12,7 +12,6 @@ Route::get('/', function () {
 
 // Auth Routes - Only available for guest (not logged in)
 Route::middleware('guest')->group(function () {
-    // Update to match the correct method `showLoginForm`
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
@@ -22,7 +21,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // Protected Routes (Need Authentication)
 Route::middleware('auth')->group(function () {
-    // Dashboard and Product routes
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Product Detail Routes
+    Route::get('/products/{id}', [ProductController::class, 'detail'])->name('products.detail');
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.detail');
 });

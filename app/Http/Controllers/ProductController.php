@@ -8,47 +8,66 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    /**
+     * Tampilkan daftar produk dengan filter pencarian & kategori.
+     */
     public function index(Request $request)
     {
-        // Mengambil semua kategori untuk dropdown
-        $categories = Category::all();
+        // Ambil semua kategori untuk dropdown
+        $categories = Category::orderBy('name')->get();
 
-        // Memulai query untuk mengambil produk
-        $query = Product::query();
+        // Mulai query dengan eager loading kategori untuk efisiensi
+        $query = Product::with('category');
 
-        // Filter berdasarkan nama produk
-        if ($request->has('search') && $request->search != '') {
-            $query->where('name', 'like', '%' . $request->search . '%');
+        // Filter berdasarkan nama produk (search)
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where('name', 'like', "%{$search}%");
         }
 
         // Filter berdasarkan kategori
-        if ($request->has('category') && $request->category != '') {
-            $query->where('category_id', $request->category);
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->input('category'));
         }
 
-        // Ambil produk yang telah difilter
-        $featuredProducts = $query->get();
+        // Urutkan terbaru dan paginasi (ubah 12 sesuai kebutuhan)
+        // Jika tidak ingin paginasi, bisa ganti ->paginate(...) menjadi ->get()
+        $featuredProducts = $query->latest()->paginate(12)->withQueryString();
 
-        // Mengembalikan view dengan data produk dan kategori
+        // Kembalikan ke view
         return view('dashboard.index', compact('featuredProducts', 'categories'));
     }
 
+    /**
+     * Detail produk berdasarkan slug.
+     * Tetap dipertahankan jika routing kamu menggunakan slug.
+     */
     public function show($slug)
     {
-        // Mengambil produk berdasarkan slug dengan eager loading category
+        // Ambil produk by slug + eager loading category
         $product = Product::with('category')
-                          ->where('slug', $slug)
-                          ->firstOrFail();
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        // Mengambil produk terkait (produk yang memiliki kategori sama, namun tidak termasuk produk yang sedang dilihat)
-        $relatedProducts = Product::with('category') // Menambahkan eager loading untuk kategori
-                                  ->where('category_id', $product->category_id)
-                                  ->where('id', '!=', $product->id)
-                                  ->latest() // Produk terkait diurutkan berdasarkan yang terbaru
-                                  ->take(4) // Membatasi hasil produk terkait menjadi 4 produk
-                                  ->get();
+        // Produk terkait (kategori sama, bukan produk ini)
+        $relatedProducts = Product::with('category')
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->latest()
+            ->take(4)
+            ->get();
 
-        // Mengembalikan view dengan data produk dan produk terkait
         return view('products.detail', compact('product', 'relatedProducts'));
+    }
+
+    /**
+     * Detail produk berdasarkan ID (sesuai permintaan).
+     * Mengembalikan view 'products.detail' hanya dengan variabel $product.
+     */
+    public function detail($id)
+    {
+        $product = Product::with('category')->findOrFail($id);
+
+        return view('products.detail', compact('product'));
     }
 }

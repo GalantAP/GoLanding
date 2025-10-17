@@ -26,7 +26,7 @@
         /* Navbar Styling */
         .navbar {
             background: #000000;
-            padding: 18px 0;
+            padding: 15px 0;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -40,7 +40,7 @@
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             text-decoration: none;
             color: white;
@@ -52,8 +52,11 @@
 
         .nav-links {
             display: flex;
-            gap: 40px;
+            gap: 35px;
             align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .nav-links a {
@@ -62,6 +65,7 @@
             font-weight: 500;
             font-size: 14px;
             transition: color 0.3s;
+            position: relative;
         }
 
         .nav-links a:hover,
@@ -69,16 +73,31 @@
             color: #ffffff;
         }
 
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #dc0000;
+        }
+
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .cart-icon {
             color: #dc0000;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.1);
         }
 
         .login-btn {
@@ -89,14 +108,19 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .login-btn:hover {
+            color: #dc0000;
         }
 
         .signup-btn {
             background: #dc0000;
             border: none;
             color: white;
-            padding: 10px 24px;
-            border-radius: 5px;
+            padding: 10px 26px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
@@ -105,6 +129,7 @@
 
         .signup-btn:hover {
             background: #ff0000;
+            transform: translateY(-2px);
         }
 
         /* Hero Section */
@@ -161,12 +186,12 @@
         }
 
         .search-btn {
-            padding: 14px 30px;
+            padding: 14px 32px;
             background: #dc0000;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
@@ -174,32 +199,39 @@
 
         .search-btn:hover {
             background: #ff0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 0, 0, 0.4);
         }
 
         /* Category Pills */
         .category-pills {
             display: flex;
-            gap: 12px;
-            justify-content: center;
+            gap: 15px;
+            justify-content: flex-start;
             flex-wrap: wrap;
             margin-bottom: 15px;
         }
 
         .pill {
-            padding: 10px 20px;
+            padding: 10px 22px;
             background: transparent;
-            border: 1px solid rgba(220, 0, 0, 0.5);
-            border-radius: 25px;
+            border: 1.5px solid #dc0000;
+            border-radius: 30px;
             color: #dc0000;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .pill:hover {
-            background: rgba(220, 0, 0, 0.1);
-            border-color: #dc0000;
+            background: #dc0000;
+            color: white;
+        }
+
+        .pill.active {
+            background: #dc0000;
+            color: white;
         }
 
         /* Section Header */
@@ -216,24 +248,26 @@
         }
 
         .view-all-btn {
-            padding: 10px 24px;
+            padding: 12px 28px;
             background: transparent;
-            border: 1px solid rgba(220, 0, 0, 0.5);
-            border-radius: 5px;
+            border: 2px solid #dc0000;
+            border-radius: 8px;
             color: #dc0000;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .view-all-btn:hover {
-            background: rgba(220, 0, 0, 0.1);
-            border-color: #dc0000;
+            background: #dc0000;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 0, 0, 0.3);
         }
 
         /* Product Grid */
@@ -251,12 +285,19 @@
             transition: all 0.3s;
             border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .product-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(220, 0, 0, 0.3);
             border-color: rgba(220, 0, 0, 0.3);
+        }
+
+        .product-card.hidden {
+            display: none;
         }
 
         .product-image {
@@ -272,6 +313,18 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s;
+            background: #1a0000;
+        }
+
+        .product-image img[src=""] {
+            background: linear-gradient(90deg, #1a0000 25%, #2a0000 50%, #1a0000 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .product-card:hover .product-image img {
@@ -372,6 +425,18 @@
         .action-btn:hover {
             background: #dc0000;
             color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .no-results h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         /* FAQ Section */
@@ -579,17 +644,16 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan tortor malesuada at sodales ut placerat. Praesent vulputate commodo laoreet.</p>
             
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="🔍 Cari template anda">
-                <button class="search-btn">Search</button>
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari template anda">
+                <button class="search-btn" onclick="performSearch()">Search</button>
             </div>
 
             <div class="category-pills">
-                <span class="pill">📱 Responsive</span>
-                <span class="pill">💼 Portfolio</span>
-                <span class="pill">📄 Landing Page</span>
-                <span class="pill">🛒 E-commerce</span>
-                <span class="pill">⭐ 5/5 Bintangnya</span>
-                <span class="pill">🎨 Popular</span>
+                <span class="pill" data-category="all" onclick="filterByCategory('all')">Semua</span>
+                <span class="pill" data-category="E-Commerce" onclick="filterByCategory('E-Commerce')">E-Commerce</span>
+                <span class="pill" data-category="Portofolio" onclick="filterByCategory('Portofolio')">Portofolio</span>
+                <span class="pill" data-category="Landing Page" onclick="filterByCategory('Landing Page')">Landing Page</span>
+                <span class="pill" data-category="Other" onclick="filterByCategory('Other')">Other</span>
             </div>
         </div>
     </div>
@@ -602,11 +666,17 @@
                 <a href="#" class="view-all-btn">View All →</a>
             </div>
 
-            <div class="product-grid">
+            <div class="product-grid" id="featuredGrid">
                 @foreach($featuredProducts->take(4) as $product)
-                    <div class="product-card">
+                    <a href="{{ route('products.detail', $product->id) }}" 
+                       class="product-card" 
+                       data-name="{{ strtolower($product->name) }}" 
+                       data-category="{{ $product->category->name }}">
                         <div class="product-image">
-                            <img src="{{ $product->image }}" alt="{{ $product->name }}">
+                            <img src="{{ $product->image }}" 
+                                 alt="{{ $product->name }}"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x500/1a0000/dc0000?text={{ urlencode($product->name) }}';">
                             <div class="product-badge {{ $product->is_new ? 'new' : 'featured' }}">
                                 {{ $product->is_new ? 'PREMIUM' : 'FEATURED' }}
                             </div>
@@ -626,13 +696,17 @@
                                     @endif
                                 </div>
                                 <div class="product-actions">
-                                    <button class="action-btn">🛒</button>
-                                    <button class="action-btn">👁</button>
+                                    <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
+                                    <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
+            </div>
+            <div id="featuredNoResults" class="no-results" style="display: none;">
+                <h3>Tidak ada produk ditemukan</h3>
+                <p>Coba kata kunci atau kategori lain</p>
             </div>
         </div>
     @endif
@@ -644,11 +718,17 @@
             <a href="#" class="view-all-btn">View All →</a>
         </div>
 
-        <div class="product-grid">
+        <div class="product-grid" id="latestGrid">
             @foreach($featuredProducts as $product)
-                <div class="product-card">
+                <a href="{{ route('products.detail', $product->id) }}" 
+                   class="product-card" 
+                   data-name="{{ strtolower($product->name) }}" 
+                   data-category="{{ $product->category->name }}">
                     <div class="product-image">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}">
+                        <img src="{{ $product->image }}" 
+                             alt="{{ $product->name }}"
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='https://placehold.co/800x500/1a0000/dc0000?text={{ urlencode($product->name) }}';">
                         @if($product->is_new)
                             <div class="product-badge">PREMIUM</div>
                         @endif
@@ -668,13 +748,17 @@
                                 @endif
                             </div>
                             <div class="product-actions">
-                                <button class="action-btn">🛒</button>
-                                <button class="action-btn">👁</button>
+                                <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
+                                <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             @endforeach
+        </div>
+        <div id="latestNoResults" class="no-results" style="display: none;">
+            <h3>Tidak ada produk ditemukan</h3>
+            <p>Coba kata kunci atau kategori lain</p>
         </div>
     </div>
 
@@ -795,5 +879,102 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // State management
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+
+        // Filter by category
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active pill
+            document.querySelectorAll('.pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            document.querySelector(.pill[data-category="${category}"]).classList.add('active');
+            
+            // Apply filters
+            applyFilters();
+        }
+
+        // Perform search
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            currentSearchTerm = searchInput.value.toLowerCase().trim();
+            applyFilters();
+        }
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Apply both search and category filters
+        function applyFilters() {
+            filterProducts('featuredGrid', 'featuredNoResults');
+            filterProducts('latestGrid', 'latestNoResults');
+        }
+
+        // Filter products in a specific grid
+        function filterProducts(gridId, noResultsId) {
+            const grid = document.getElementById(gridId);
+            const noResults = document.getElementById(noResultsId);
+            const products = grid.querySelectorAll('.product-card');
+            let visibleCount = 0;
+
+            products.forEach(product => {
+                const productName = product.getAttribute('data-name');
+                const productCategory = product.getAttribute('data-category');
+                
+                // Check category filter
+                const categoryMatch = currentCategory === 'all' || productCategory === currentCategory;
+                
+                // Check search filter
+                const searchMatch = currentSearchTerm === '' || productName.includes(currentSearchTerm);
+                
+                // Show or hide product
+                if (categoryMatch && searchMatch) {
+                    product.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    product.classList.add('hidden');
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+                grid.style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                grid.style.display = 'grid';
+            }
+        }
+
+        // Reset filters
+        function resetFilters() {
+            currentCategory = 'all';
+            currentSearchTerm = '';
+            document.getElementById('searchInput').value = '';
+            
+            document.querySelectorAll('.pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            
+            applyFilters();
+        }
+
+        // Initialize - set "Semua" as active by default
+        document.addEventListener('DOMContentLoaded', function() {
+            const allPill = document.querySelector('.pill[data-category="all"]');
+            if (allPill) {
+                allPill.classList.add('active');
+            }
+        });
+    </script>
 
 @endsection

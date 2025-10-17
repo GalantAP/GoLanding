@@ -1,9 +1,21 @@
-@extends('layouts.app')
-
-@section('title', 'Login - GoLanding')
-
-@section('styles')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GoLanding</title>
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -68,6 +80,7 @@
             background: linear-gradient(135deg, #dc0000, #ff4444);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
         }
 
@@ -128,9 +141,21 @@
         .btn-login {
             width: 100%;
             padding: 14px;
+            background: linear-gradient(135deg, #dc0000, #ff0000);
+            border: none;
+            border-radius: 8px;
+            color: white;
             font-size: 16px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #ff0000, #dc0000);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220, 0, 0, 0.3);
         }
 
         .error-message {
@@ -169,11 +194,13 @@
             color: #888;
             margin: 5px 0;
         }
+
+        .demo-accounts strong {
+            color: #ccc;
+        }
     </style>
-@endsection
-
-@section('content')
-
+</head>
+<body>
     <div class="login-container">
         <div class="login-box">
             <div class="login-header">
@@ -209,7 +236,7 @@
                     <label for="remember">Remember me</label>
                 </div>
 
-                <button type="submit" class="btn-login btn-primary">Login</button>
+                <button type="submit" class="btn-login">Login</button>
             </form>
 
             <div class="divider">or</div>
@@ -221,5 +248,5 @@
             </div>
         </div>
     </div>
-
-@endsection
+</body>
+</html>
