@@ -12,12 +12,19 @@ Route::get('/', function () {
 
 // Auth Routes - Only available for guest (not logged in)
 Route::middleware('guest')->group(function () {
+    // Login
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+    // Register
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
 // Logout Route - Protected by auth middleware
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->name('logout')
+    ->middleware('auth');
 
 // Protected Routes (Need Authentication)
 Route::middleware('auth')->group(function () {
