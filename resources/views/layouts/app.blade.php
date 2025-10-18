@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -10,9 +10,11 @@
     <title>@yield('title', 'GoLanding - Premium Website Templates')</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Inline Styles (if any) -->
+    <!-- Base Styles -->
     <style>
         * {
             margin: 0;
@@ -20,24 +22,31 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
-            line-height: 1.6;
+        html {
+            scroll-behavior: smooth;
         }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Utility Classes */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 40px;
         }
 
         .btn {
             display: inline-block;
             padding: 12px 30px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             text-decoration: none;
@@ -46,12 +55,12 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #dc0000, #8b0000);
+            background: #dc0000;
             color: white;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #ff0000, #dc0000);
+            background: #ff0000;
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(220, 0, 0, 0.4);
         }
@@ -67,119 +76,39 @@
             color: white;
         }
 
-        /* Navbar */
-        .navbar {
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(220, 0, 0, 0.2);
+        /* Hide scrollbar but keep functionality */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #dc0000, #ff4444);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        ::-webkit-scrollbar-thumb {
+            background: #dc0000;
+            border-radius: 4px;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0000;
         }
 
-        .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
         }
-
-        .nav-links a:hover {
-            color: #dc0000;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #dc0000, #8b0000);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
     </style>
 
     @yield('styles') <!-- Custom styles from child views -->
 </head>
 
 <body>
-
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                GoLanding
-            </div>
-            <div class="nav-links">
-                <a href="{{ route('dashboard') }}">Dashboard</a>
-                <a href="{{ route('product.detail', ['slug' => 'sample-product']) }}">Product</a>
-                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-            </div>
-            <div class="user-info">
-                <div class="user-avatar">
-                    @if(Auth::check())
-                        {{ substr(Auth::user()->name, 0, 1) }}
-                    @else
-                        G
-                    @endif
-                </div>
-                <span>
-                    @if(Auth::check())
-                        {{ Auth::user()->name }}
-                    @else
-                        Guest
-                    @endif
-                </span>
-            </div>
-        </div>
-    </nav>
-
     <!-- Main Content -->
     <main>
         @yield('content')
     </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 GoLanding. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Logout Form -->
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
 
     @yield('scripts') <!-- Custom scripts from child views -->
 

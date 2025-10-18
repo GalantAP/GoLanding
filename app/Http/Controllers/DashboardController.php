@@ -8,47 +8,43 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    /**
+     * Display the dashboard
+     * Accessible untuk semua orang (tidak perlu login)
+     */
     public function index(Request $request)
     {
         $query = Product::with('category');
-
-        // Filter berdasarkan kategori
-        if ($request->has('category') && !empty($request->category)) {
-            $query->where('category_id', $request->category);
+        
+        // Filter by search
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
         }
-
-        // Pencarian produk
-        if ($request->has('search') && !empty($request->search)) {
-            $query->where(function($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                      ->orWhere('description', 'like', '%' . $request->search . '%');
+        
+        // Filter by category
+        if ($request->has('category') && $request->category != 'all' && $request->category != '') {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('name', $request->category);
             });
         }
-
-        // Filter berdasarkan featured atau new
-        if ($request->has('filter')) {
-            switch ($request->filter) {
-                case 'featured':
-                    $query->where('is_featured', true);
-                    break;
-                case 'new':
-                    $query->where('is_new', true);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        // Mengambil produk dengan filter dan pagination
-        $products = $query->latest()->paginate(12);
-
-        // Mengambil kategori untuk dropdown/filter
+        
+        // Get featured products (max 4)
+        $featuredProducts = (clone $query)
+            ->where('is_featured', true)
+            ->latest()
+            ->take(4)
+            ->get();
+        
+        // Get latest products (12 products)
+        $latestProducts = (clone $query)
+            ->latest()
+            ->take(12)
+            ->get();
+        
+        // Get all categories for filter
         $categories = Category::all();
-
-        // Mengambil produk featured untuk ditampilkan di bagian khusus
-        $featuredProducts = Product::where('is_featured', true)->take(4)->get();
-
-        // Mengembalikan view dengan data yang diperlukan
-        return view('dashboard.index', compact('products', 'categories', 'featuredProducts'));
+        
+        return view('dashboard.index', compact('featuredProducts', 'latestProducts', 'categories'));
     }
 }

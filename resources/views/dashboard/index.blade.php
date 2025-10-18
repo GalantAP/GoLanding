@@ -100,6 +100,12 @@
             transform: scale(1.1);
         }
 
+        .user-name {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
         .login-btn {
             background: transparent;
             border: none;
@@ -109,6 +115,8 @@
             font-weight: 500;
             font-size: 14px;
             transition: color 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .login-btn:hover {
@@ -125,11 +133,17 @@
             font-weight: 600;
             font-size: 14px;
             transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .signup-btn:hover {
             background: #ff0000;
             transform: translateY(-2px);
+        }
+
+        .logout-form {
+            display: inline-block;
         }
 
         /* Hero Section */
@@ -207,7 +221,7 @@
         .category-pills {
             display: flex;
             gap: 15px;
-            justify-content: flex-start;
+            justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 15px;
         }
@@ -296,10 +310,6 @@
             border-color: rgba(220, 0, 0, 0.3);
         }
 
-        .product-card.hidden {
-            display: none;
-        }
-
         .product-image {
             position: relative;
             width: 100%;
@@ -314,17 +324,6 @@
             object-fit: cover;
             transition: transform 0.5s;
             background: #1a0000;
-        }
-
-        .product-image img[src=""] {
-            background: linear-gradient(90deg, #1a0000 25%, #2a0000 50%, #1a0000 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
         }
 
         .product-card:hover .product-image img {
@@ -439,7 +438,7 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
-        /* FAQ Section */
+        /* FAQ Section - IMPROVED WITH ACCORDION */
         .faq-section {
             padding: 80px 0;
             background: #000000;
@@ -479,6 +478,11 @@
             border-color: rgba(220, 0, 0, 0.4);
         }
 
+        .faq-item.active {
+            border-color: rgba(220, 0, 0, 0.6);
+            background: rgba(220, 0, 0, 0.05);
+        }
+
         .faq-question {
             padding: 20px 25px;
             display: flex;
@@ -487,11 +491,37 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 15px;
+            user-select: none;
         }
 
         .faq-icon {
             color: #dc0000;
-            font-size: 18px;
+            font-size: 20px;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 25px;
+        }
+
+        .faq-answer.active {
+            max-height: 500px;
+            padding: 0 25px 20px 25px;
+        }
+
+        .faq-answer p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 0;
         }
 
         /* Footer */
@@ -585,6 +615,51 @@
             font-size: 13px;
         }
 
+        /* Alert Messages - WARNA MERAH */
+        .alert {
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(220, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid rgba(220, 0, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(220, 0, 0, 0.2);
+        }
+
+        .alert-success::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #dc0000;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
         /* Responsive Design */
         @media (max-width: 1024px) {
             .footer-content {
@@ -637,23 +712,80 @@
 
 @section('content')
 
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ route('dashboard') }}" class="logo">Go<span>Landing</span></a>
+            
+            <div class="nav-links">
+                <a href="{{ route('dashboard') }}" class="active">Beranda</a>
+                <a href="{{ route('products.index') }}">Template</a>
+                <a href="#">Tentang</a>
+                <a href="#">Kontak</a>
+            </div>
+
+            <div class="nav-right">
+                <i class="cart-icon">🛒</i>
+                
+                @auth
+                    <!-- Jika user sudah login -->
+                    <span class="user-name">{{ Auth::user()->name ?? Auth::user()->email }}</span>
+                    <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                        @csrf
+                        <button type="submit" class="login-btn">Logout</button>
+                    </form>
+                @else
+                    <!-- Jika user belum login -->
+                    <a href="{{ route('auth') }}" class="login-btn">Log In</a>
+                    <a href="{{ route('auth') }}" class="signup-btn">Sign Up</a>
+                @endauth
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alert Messages -->
+    @if(session('success'))
+        <div class="container">
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
     <!-- Hero Section -->
     <div class="hero">
         <div class="container">
             <h1>Template situs web untuk desainer,<br>perusahaan, dan penggunaan pribadi</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan tortor malesuada at sodales ut placerat. Praesent vulputate commodo laoreet.</p>
             
-            <div class="search-bar">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari template anda">
-                <button class="search-btn" onclick="performSearch()">Search</button>
-            </div>
+            <!-- Search Form -->
+            <form action="{{ route('dashboard') }}" method="GET" id="searchForm">
+                <div class="search-bar">
+                    <input type="text" 
+                           name="search" 
+                           id="searchInput" 
+                           class="search-input" 
+                           placeholder="🔍 Cari template anda"
+                           value="{{ request('search') }}">
+                    <input type="hidden" name="category" id="categoryInput" value="{{ request('category', 'all') }}">
+                    <button type="submit" class="search-btn">Search</button>
+                </div>
+            </form>
 
+            <!-- Category Pills -->
             <div class="category-pills">
-                <span class="pill" data-category="all" onclick="filterByCategory('all')">Semua</span>
-                <span class="pill" data-category="E-Commerce" onclick="filterByCategory('E-Commerce')">E-Commerce</span>
-                <span class="pill" data-category="Portofolio" onclick="filterByCategory('Portofolio')">Portofolio</span>
-                <span class="pill" data-category="Landing Page" onclick="filterByCategory('Landing Page')">Landing Page</span>
-                <span class="pill" data-category="Other" onclick="filterByCategory('Other')">Other</span>
+                <span class="pill {{ request('category', 'all') == 'all' ? 'active' : '' }}" 
+                      data-category="all" 
+                      onclick="filterByCategory('all')">
+                    Semua
+                </span>
+                @foreach($categories as $category)
+                    <span class="pill {{ request('category') == $category->name ? 'active' : '' }}" 
+                          data-category="{{ $category->name }}" 
+                          onclick="filterByCategory('{{ $category->name }}')">
+                        {{ $category->name }}
+                    </span>
+                @endforeach
             </div>
         </div>
     </div>
@@ -662,16 +794,13 @@
     @if($featuredProducts->count() > 0)
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Lihat templat situs web Populer kami</h2>
-                <a href="#" class="view-all-btn">View All →</a>
+                <h2 class="section-title">Lihat Template Situs Web Populer Kami</h2>
+                <a href="{{ route('products.index') }}" class="view-all-btn">View All →</a>
             </div>
 
-            <div class="product-grid" id="featuredGrid">
-                @foreach($featuredProducts->take(4) as $product)
-                    <a href="{{ route('products.detail', $product->id) }}" 
-                       class="product-card" 
-                       data-name="{{ strtolower($product->name) }}" 
-                       data-category="{{ $product->category->name }}">
+            <div class="product-grid">
+                @foreach($featuredProducts as $product)
+                    <a href="{{ route('products.detail', $product->id) }}" class="product-card">
                         <div class="product-image">
                             <img src="{{ $product->image }}" 
                                  alt="{{ $product->name }}"
@@ -704,10 +833,6 @@
                     </a>
                 @endforeach
             </div>
-            <div id="featuredNoResults" class="no-results" style="display: none;">
-                <h3>Tidak ada produk ditemukan</h3>
-                <p>Coba kata kunci atau kategori lain</p>
-            </div>
         </div>
     @endif
 
@@ -715,54 +840,54 @@
     <div class="container">
         <div class="section-header">
             <h2 class="section-title">Produk Terbaru Kami</h2>
-            <a href="#" class="view-all-btn">View All →</a>
+            <a href="{{ route('products.index') }}" class="view-all-btn">View All →</a>
         </div>
 
-        <div class="product-grid" id="latestGrid">
-            @foreach($featuredProducts as $product)
-                <a href="{{ route('products.detail', $product->id) }}" 
-                   class="product-card" 
-                   data-name="{{ strtolower($product->name) }}" 
-                   data-category="{{ $product->category->name }}">
-                    <div class="product-image">
-                        <img src="{{ $product->image }}" 
-                             alt="{{ $product->name }}"
-                             loading="lazy"
-                             onerror="this.onerror=null; this.src='https://placehold.co/800x500/1a0000/dc0000?text={{ urlencode($product->name) }}';">
-                        @if($product->is_new)
-                            <div class="product-badge">PREMIUM</div>
-                        @endif
-                    </div>
-                    <div class="product-info">
-                        <p class="product-category">{{ $product->category->name }}</p>
-                        <h3 class="product-title">{{ $product->name }}</h3>
-                        <div class="product-footer">
-                            <div class="product-price">
-                                @if($product->discount_price)
-                                    <span class="price-current">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
-                                    <span class="price-original">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                                @elseif($product->price > 0)
-                                    <span class="price-current">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                                @else
-                                    <span class="price-free">Free</span>
-                                @endif
-                            </div>
-                            <div class="product-actions">
-                                <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
-                                <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
+        @if($latestProducts->count() > 0)
+            <div class="product-grid">
+                @foreach($latestProducts as $product)
+                    <a href="{{ route('products.detail', $product->id) }}" class="product-card">
+                        <div class="product-image">
+                            <img src="{{ $product->image }}" 
+                                 alt="{{ $product->name }}"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/800x500/1a0000/dc0000?text={{ urlencode($product->name) }}';">
+                            @if($product->is_new)
+                                <div class="product-badge">PREMIUM</div>
+                            @endif
+                        </div>
+                        <div class="product-info">
+                            <p class="product-category">{{ $product->category->name }}</p>
+                            <h3 class="product-title">{{ $product->name }}</h3>
+                            <div class="product-footer">
+                                <div class="product-price">
+                                    @if($product->discount_price)
+                                        <span class="price-current">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                                        <span class="price-original">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                    @elseif($product->price > 0)
+                                        <span class="price-current">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                    @else
+                                        <span class="price-free">Free</span>
+                                    @endif
+                                </div>
+                                <div class="product-actions">
+                                    <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
+                                    <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-        <div id="latestNoResults" class="no-results" style="display: none;">
-            <h3>Tidak ada produk ditemukan</h3>
-            <p>Coba kata kunci atau kategori lain</p>
-        </div>
+                    </a>
+                @endforeach
+            </div>
+        @else
+            <div class="no-results">
+                <h3>Tidak ada produk ditemukan</h3>
+                <p>Coba kata kunci atau kategori lain</p>
+            </div>
+        @endif
     </div>
 
-    <!-- FAQ Section -->
+    <!-- FAQ Section with Accordion -->
     <div class="faq-section">
         <div class="container">
             <div class="faq-header">
@@ -771,58 +896,103 @@
             </div>
 
             <div class="faq-list">
+                <!-- FAQ Item 1 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Apa itu template website?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Template website adalah desain atau tata letak siap pakai yang digunakan sebagai kerangka dasar untuk membangun sebuah situs web. Template ini biasanya sudah mencakup elemen-elemen seperti struktur halaman, tata letak, warna, font, dan fitur desain lainnya, sehingga pengguna tidak perlu membuat semuanya dari nol. Dengan menggunakan template, kamu bisa menghemat waktu dan tenaga karena cukup menyesuaikan konten dan gambar sesuai kebutuhan. Template website cocok digunakan oleh pemula maupun profesional yang ingin membangun website dengan cepat, mudah, dan tetap terlihat profesional.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 2 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Apa yang membuat template web itu bagus?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Template web yang bagus memiliki beberapa karakteristik penting: desain yang responsif (menyesuaikan dengan berbagai ukuran layar), loading yang cepat, mudah dikustomisasi, memiliki kode yang bersih dan terstruktur, SEO-friendly untuk membantu website mudah ditemukan di mesin pencari, serta kompatibel dengan berbagai browser. Template yang baik juga menyediakan dokumentasi lengkap dan support yang responsif untuk membantu pengguna dalam proses kustomisasi.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 3 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Bagaimana cara menggunakan tema website?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Cara menggunakan tema website cukup mudah.
+                            Pertama, download file template yang sudah kamu beli atau pilih. Kemudian, ekstrak file zip tersebut dan upload ke hosting atau server kamu. Setelah itu, kamu bisa mulai mengkustomisasi konten seperti teks, gambar, logo, dan warna sesuai dengan brand atau kebutuhan bisnis kamu. Sebagian besar template modern sudah dilengkapi dengan panel admin atau page builder yang memudahkan proses editing tanpa perlu coding.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 4 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Bisakah saya menambahkan halaman baru ke tema yang dipakai?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Tentu saja! Sebagian besar template website memungkinkan kamu untuk menambahkan halaman baru dengan mudah. Kamu bisa menduplikasi halaman yang sudah ada dan mengubah kontennya, atau membuat halaman dari awal menggunakan page builder yang disediakan. Template yang baik biasanya sudah menyediakan berbagai pilihan layout halaman yang bisa kamu gunakan untuk halaman baru seperti halaman About, Services, Contact, Blog, dan lain-lain.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 5 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Apakah saya butuh kemampuan coding untuk menggunakan template?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Tidak, kamu tidak memerlukan kemampuan coding untuk menggunakan sebagian besar template modern. Template kami dirancang agar user-friendly dan mudah dikustomisasi melalui interface visual atau drag-and-drop editor. Namun, jika kamu memiliki pengetahuan dasar HTML, CSS, atau JavaScript, itu akan menjadi nilai tambah untuk melakukan kustomisasi yang lebih advanced dan sesuai dengan kebutuhan spesifik kamu.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 6 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Bagaimana cara memilih template untuk website saya?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Untuk memilih template yang tepat, pertimbangkan beberapa hal: jenis bisnis atau tujuan website kamu, fitur-fitur yang dibutuhkan (seperti e-commerce, booking system, portfolio gallery), desain yang sesuai dengan brand identity, responsivitas untuk tampilan mobile, kemudahan kustomisasi, dan budget yang tersedia. Lihat juga demo dan review dari pengguna lain untuk memastikan template tersebut berkualitas baik dan mendapat dukungan yang memadai dari developer.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 7 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Apakah template bisa digunakan untuk semua jenis bisnis?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Ya, template website kami tersedia untuk berbagai jenis bisnis dan industri. Kami menyediakan template khusus untuk e-commerce, portfolio, corporate, restaurant, real estate, blog, startup, dan banyak lagi. Setiap template dirancang dengan mempertimbangkan kebutuhan spesifik industri tersebut, namun tetap fleksibel untuk dikustomisasi sesuai dengan kebutuhan unik bisnis kamu. Kamu juga bisa menggunakan template umum dan menyesuaikannya dengan konten dan branding bisnis kamu.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 8 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Apakah saya bisa mengubah template sesuai keinginan?</span>
                         <span class="faq-icon">⌄</span>
                     </div>
+                    <div class="faq-answer">
+                        <p>Tentu saja! Semua template kami fully customizable. Kamu bisa mengubah warna, font, layout, gambar, teks, dan hampir semua elemen visual sesuai dengan preferensi dan kebutuhan brand kamu. Untuk pengguna yang lebih advanced, kamu juga bisa memodifikasi kode HTML, CSS, dan JavaScript untuk kustomisasi yang lebih mendalam. Kami juga menyediakan dokumentasi lengkap dan video tutorial untuk membantu kamu dalam proses kustomisasi.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ Item 9 -->
                 <div class="faq-item">
-                    <div class="faq-question">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
                         <span>Apakah ada jaminan uang kembali?</span>
                         <span class="faq-icon">⌄</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Ya, kami menyediakan jaminan uang kembali 30 hari untuk semua pembelian template. Jika kamu tidak puas dengan template yang dibeli karena alasan teknis atau tidak sesuai dengan ekspektasi, kamu bisa mengajukan refund dalam waktu 30 hari setelah pembelian. Kami berkomitmen untuk memberikan produk berkualitas tinggi dan kepuasan pelanggan adalah prioritas utama kami. Namun, pastikan untuk membaca syarat dan ketentuan refund policy kami untuk detail lebih lanjut.</p>
                     </div>
                 </div>
             </div>
@@ -881,98 +1051,51 @@
     </div>
 
     <script>
-        // State management
-        let currentCategory = 'all';
-        let currentSearchTerm = '';
+        // Toggle FAQ Accordion
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const faqAnswer = faqItem.querySelector('.faq-answer');
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+                item.querySelector('.faq-answer').classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+                faqAnswer.classList.add('active');
+            }
+        }
 
         // Filter by category
         function filterByCategory(category) {
-            currentCategory = category;
+            // Set category value in hidden input
+            document.getElementById('categoryInput').value = category;
             
-            // Update active pill
-            document.querySelectorAll('.pill').forEach(pill => {
-                pill.classList.remove('active');
-            });
-            document.querySelector(.pill[data-category="${category}"]).classList.add('active');
-            
-            // Apply filters
-            applyFilters();
-        }
-
-        // Perform search
-        function performSearch() {
-            const searchInput = document.getElementById('searchInput');
-            currentSearchTerm = searchInput.value.toLowerCase().trim();
-            applyFilters();
+            // Submit form
+            document.getElementById('searchForm').submit();
         }
 
         // Search on Enter key
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                performSearch();
+                e.preventDefault();
+                document.getElementById('searchForm').submit();
             }
         });
 
-        // Apply both search and category filters
-        function applyFilters() {
-            filterProducts('featuredGrid', 'featuredNoResults');
-            filterProducts('latestGrid', 'latestNoResults');
-        }
-
-        // Filter products in a specific grid
-        function filterProducts(gridId, noResultsId) {
-            const grid = document.getElementById(gridId);
-            const noResults = document.getElementById(noResultsId);
-            const products = grid.querySelectorAll('.product-card');
-            let visibleCount = 0;
-
-            products.forEach(product => {
-                const productName = product.getAttribute('data-name');
-                const productCategory = product.getAttribute('data-category');
-                
-                // Check category filter
-                const categoryMatch = currentCategory === 'all' || productCategory === currentCategory;
-                
-                // Check search filter
-                const searchMatch = currentSearchTerm === '' || productName.includes(currentSearchTerm);
-                
-                // Show or hide product
-                if (categoryMatch && searchMatch) {
-                    product.classList.remove('hidden');
-                    visibleCount++;
-                } else {
-                    product.classList.add('hidden');
-                }
-            });
-
-            // Show/hide no results message
-            if (visibleCount === 0) {
-                noResults.style.display = 'block';
-                grid.style.display = 'none';
-            } else {
-                noResults.style.display = 'none';
-                grid.style.display = 'grid';
-            }
-        }
-
-        // Reset filters
-        function resetFilters() {
-            currentCategory = 'all';
-            currentSearchTerm = '';
-            document.getElementById('searchInput').value = '';
-            
-            document.querySelectorAll('.pill').forEach(pill => {
-                pill.classList.remove('active');
-            });
-            
-            applyFilters();
-        }
-
-        // Initialize - set "Semua" as active by default
+        // Auto-hide alert after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {
-            const allPill = document.querySelector('.pill[data-category="all"]');
-            if (allPill) {
-                allPill.classList.add('active');
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
             }
         });
     </script>

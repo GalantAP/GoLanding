@@ -5,19 +5,18 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 
-// Redirect root to login, but only if the user is not authenticated
-Route::get('/', function () {
-    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
-});
+// Dashboard sebagai halaman utama (accessible untuk semua orang)
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-// Auth Routes - Only available for guest (not logged in)
+// Auth Routes - Hanya untuk guest (belum login)
 Route::middleware('guest')->group(function () {
+    // Halaman Auth (Login & Register dalam satu halaman)
+    Route::get('/auth', [AuthController::class, 'showAuthForm'])->name('auth');
+    
     // Login
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
+    
     // Register
-    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
@@ -26,12 +25,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout')
     ->middleware('auth');
 
-// Protected Routes (Need Authentication)
-Route::middleware('auth')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
-    // Product Detail Routes
-    Route::get('/products/{id}', [ProductController::class, 'detail'])->name('products.detail');
-    Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.detail');
-});
+// Product Routes (accessible untuk semua orang)
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{id}', [ProductController::class, 'detail'])->name('products.detail');
+Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.detail');

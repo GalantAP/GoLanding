@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use Illuminate\Database\Seeder;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CategorySeeder extends Seeder
 {
@@ -18,11 +18,11 @@ class CategorySeeder extends Seeder
 
         // Data kategori yang akan di-seed
         $categories = [
-            ['name' => 'Landing Page', 'slug' => 'landing-page'],
-            ['name' => 'E-Commerce', 'slug' => 'e-commerce'],
-            ['name' => 'Portfolio', 'slug' => 'portfolio'],
-            ['name' => 'Corporate', 'slug' => 'corporate'],
-            ['name' => 'Blog', 'slug' => 'blog'],
+            ['name' => 'Landing Page', 'slug' => 'landing-page', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'E-Commerce', 'slug' => 'e-commerce', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Portfolio', 'slug' => 'portfolio', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Corporate', 'slug' => 'corporate', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Blog', 'slug' => 'blog', 'created_at' => now(), 'updated_at' => now()],
         ];
 
         // Menambahkan data kategori ke dalam tabel categories
@@ -32,5 +32,7 @@ class CategorySeeder extends Seeder
 
         // Mengaktifkan kembali foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+        
+        $this->command->info('Categories seeded successfully!');
     }
 }

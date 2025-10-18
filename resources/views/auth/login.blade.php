@@ -18,16 +18,16 @@
         }
 
         .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: url('{{ asset('assets/BG_Login.jpg') }}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    position: relative;
-}
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('{{ asset('assets/BG_Login.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
 
         .login-container::before {
             content: '';
@@ -155,6 +155,17 @@
             background: rgba(100, 0, 0, 0.7);
         }
 
+        .form-control.is-invalid {
+            border-color: #ff6b6b;
+        }
+
+        .invalid-feedback {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
         .password-toggle {
             position: absolute;
             right: 15px;
@@ -210,6 +221,11 @@
             background: #cc0000;
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .divider {
@@ -293,10 +309,45 @@
             font-weight: bold;
             font-size: 12px;
         }
+
+        .back-to-home {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 10;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <!-- Back to Home Button -->
+        <div class="back-to-home">
+            <a href="{{ route('dashboard') }}" class="back-btn">
+                ← Kembali ke Beranda
+            </a>
+        </div>
+
         <div class="auth-wrapper">
             <div class="auth-box" id="authBox">
                 <!-- Register Side -->
@@ -305,12 +356,21 @@
                         <h1>Silahkan Daftar Akun Anda</h1>
                     </div>
 
-                    <form action="{{ route('register.post') }}" method="POST">
+                    <form action="{{ route('register.post') }}" method="POST" id="registerForm">
                         @csrf
 
                         <div class="form-group">
                             <label for="register-email">Email</label>
-                            <input type="email" name="email" id="register-email" class="form-control" placeholder="golanding@gmail.com" required>
+                            <input type="email" 
+                                   name="email" 
+                                   id="register-email" 
+                                   class="form-control @error('email') is-invalid @enderror" 
+                                   placeholder="golanding@gmail.com" 
+                                   value="{{ old('email') }}"
+                                   required>
+                            @error('email')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="form-group">
@@ -319,9 +379,17 @@
                                 <a href="#">Lupa ?</a>
                             </div>
                             <div class="input-wrapper">
-                                <input type="password" name="password" id="register-password" class="form-control" placeholder="Masukkan Password Anda" required>
+                                <input type="password" 
+                                       name="password" 
+                                       id="register-password" 
+                                       class="form-control @error('password') is-invalid @enderror" 
+                                       placeholder="Masukkan Password Anda (min. 6 karakter)" 
+                                       required>
                                 <span class="password-toggle" onclick="togglePassword('register-password')">👁️</span>
                             </div>
+                            @error('password')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <button type="submit" class="btn-submit">Daftar</button>
@@ -351,12 +419,21 @@
                         <h1>Selamat Datang Kembali</h1>
                     </div>
 
-                    <form action="{{ route('login.post') }}" method="POST">
+                    <form action="{{ route('login.post') }}" method="POST" id="loginForm">
                         @csrf
 
                         <div class="form-group">
                             <label for="login-email">Email</label>
-                            <input type="email" name="email" id="login-email" class="form-control" placeholder="golanding@gmail.com" required>
+                            <input type="email" 
+                                   name="email" 
+                                   id="login-email" 
+                                   class="form-control @error('email') is-invalid @enderror" 
+                                   placeholder="golanding@gmail.com" 
+                                   value="{{ old('email') }}"
+                                   required>
+                            @error('email')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="form-group">
@@ -365,9 +442,17 @@
                                 <a href="#">Lupa ?</a>
                             </div>
                             <div class="input-wrapper">
-                                <input type="password" name="password" id="login-password" class="form-control" placeholder="Masukkan Password Anda" required>
+                                <input type="password" 
+                                       name="password" 
+                                       id="login-password" 
+                                       class="form-control @error('password') is-invalid @enderror" 
+                                       placeholder="Masukkan Password Anda" 
+                                       required>
                                 <span class="password-toggle" onclick="togglePassword('login-password')">👁️</span>
                             </div>
+                            @error('password')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="form-check">
@@ -420,6 +505,17 @@
         function switchToRegister() {
             document.getElementById('authBox').classList.remove('flip');
         }
+
+        // Check if there are errors and show the correct form
+        document.addEventListener('DOMContentLoaded', function() {
+            @if($errors->any())
+                // If there are errors, check which form was submitted
+                const loginErrors = {{ $errors->has('email') || $errors->has('password') ? 'true' : 'false' }};
+                if (loginErrors) {
+                    switchToLogin();
+                }
+            @endif
+        });
     </script>
 </body>
 </html>

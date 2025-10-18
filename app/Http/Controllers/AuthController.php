@@ -2,57 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Halaman login
-    public function showLoginForm()
+    /**
+     * Show the auth form (login & register)
+     */
+    public function showAuthForm()
     {
-        // Jika pengguna sudah login, arahkan ke dashboard
-        if (Auth::check()) {
-            return redirect()->route('dashboard');
-        }
-
         return view('auth.login');
     }
 
-    // Proses login
+    /**
+     * Handle login request
+     */
     public function login(Request $request)
     {
-        // Validasi input dari form login
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Mencoba login dengan kredensial yang diberikan
         if (Auth::attempt($credentials, $request->filled('remember'))) {
-            // Regenerasi session untuk menghindari session fixation
             $request->session()->regenerate();
-
-            // Mengarahkan ke dashboard setelah login sukses
-            return redirect()->intended(route('dashboard'));
+            
+            return redirect()->intended('/')->with('success', 'Selamat datang kembali!');
         }
 
-        // Jika login gagal, kembali ke halaman login dengan pesan error
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ])->onlyInput('email');
     }
 
-    // Proses logout
+    /**
+     * Handle register request
+     */
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+        ]);
+
+        $user = User::create([
+            'name' => explode('@', $validated['email'])[0], // Extract name from email
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        Auth::login($user);
+
+        return redirect('/')->with('success', 'Akun berhasil dibuat!');
+    }
+
+    /**
+     * Handle logout request
+     */
     public function logout(Request $request)
     {
-        // Logout user dari aplikasi
         Auth::logout();
 
-        // Hapus session dan generate token baru untuk menjaga keamanan
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Arahkan kembali ke halaman login
-        return redirect()->route('login');
+        return redirect('/')->with('success', 'Anda telah logout.');
     }
 }
