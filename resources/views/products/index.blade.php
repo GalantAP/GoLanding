@@ -11,6 +11,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: #000000;
@@ -23,7 +27,7 @@
             padding: 0 40px;
         }
 
-        /* Navbar Styling */
+        /* Navbar Styling - SAMA DENGAN DASHBOARD */
         .navbar {
             background: #000000;
             padding: 15px 0;
@@ -66,6 +70,7 @@
             font-size: 14px;
             transition: color 0.3s;
             position: relative;
+            cursor: pointer;
         }
 
         .nav-links a:hover,
@@ -94,10 +99,33 @@
             font-size: 20px;
             cursor: pointer;
             transition: transform 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .cart-icon:hover {
             transform: scale(1.1);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #dc0000;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 2px 5px rgba(220, 0, 0, 0.3);
+        }
+
+        .cart-badge:empty {
+            display: none;
         }
 
         .user-name {
@@ -270,32 +298,6 @@
             font-weight: 700;
         }
 
-        .sort-filter {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .sort-filter label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .sort-filter select {
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .sort-filter select:focus {
-            outline: none;
-            border-color: #dc0000;
-        }
-
         /* Product Grid */
         .product-grid {
             display: grid;
@@ -436,6 +438,51 @@
         .action-btn:hover {
             background: #dc0000;
             color: white;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(220, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid rgba(220, 0, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(220, 0, 0, 0.2);
+        }
+
+        .alert-success::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #dc0000;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         /* Pagination */
@@ -631,7 +678,7 @@
 
 @section('content')
 
-    <!-- Navbar -->
+    <!-- Navbar - SAMA DENGAN DASHBOARD -->
     <nav class="navbar">
         <div class="container">
             <a href="{{ route('dashboard') }}" class="logo">Go<span>Landing</span></a>
@@ -639,12 +686,17 @@
             <div class="nav-links">
                 <a href="{{ route('dashboard') }}">Beranda</a>
                 <a href="{{ route('products.index') }}" class="active">Template</a>
-                <a href="#">Tentang</a>
-                <a href="#">Kontak</a>
+                <a href="{{ route('dashboard') }}#faq-section">Tentang</a>
+                <a href="{{ route('dashboard') }}#footer-section">Kontak</a>
             </div>
 
             <div class="nav-right">
-                <i class="cart-icon">🛒</i>
+                <a href="{{ route('cart') }}" class="cart-icon">
+                    🛒
+                    @if(isset($cartCount) && $cartCount > 0)
+                        <span class="cart-badge">{{ $cartCount }}</span>
+                    @endif
+                </a>
                 
                 @auth
                     <span class="user-name">{{ Auth::user()->name ?? Auth::user()->email }}</span>
@@ -659,6 +711,15 @@
             </div>
         </div>
     </nav>
+
+    <!-- Alert Messages -->
+    @if(session('success'))
+        <div class="container">
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
 
     <!-- Page Header -->
     <div class="page-header">
@@ -742,7 +803,10 @@
                                         @endif
                                     </div>
                                     <div class="product-actions">
-                                        <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
+                                        <form action="{{ route('cart.add', $product->id) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="action-btn" onclick="event.stopPropagation();">🛒</button>
+                                        </form>
                                         <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
                                     </div>
                                 </div>
@@ -802,6 +866,7 @@
                     <ul>
                         <li><a href="#">Aplikerenation</a></li>
                         <li><a href="#">Frip Services</a></li>
+                        >
                         <li><a href="#">Business & Reunion</a></li>
                         <li><a href="#">Creative And Blog</a></li>
                         <li><a href="#">Contact Us</a></li>
@@ -845,6 +910,18 @@
             if (e.key === 'Enter') {
                 e.preventDefault();
                 document.getElementById('searchForm').submit();
+            }
+        });
+
+        // Auto-hide alert after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
             }
         });
     </script>

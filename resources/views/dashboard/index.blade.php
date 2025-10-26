@@ -11,6 +11,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background: #000000;
@@ -66,6 +70,7 @@
             font-size: 14px;
             transition: color 0.3s;
             position: relative;
+            cursor: pointer;
         }
 
         .nav-links a:hover,
@@ -94,10 +99,33 @@
             font-size: 20px;
             cursor: pointer;
             transition: transform 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .cart-icon:hover {
             transform: scale(1.1);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: #dc0000;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.2;
+            box-shadow: 0 2px 5px rgba(220, 0, 0, 0.3);
+        }
+
+        .cart-badge:empty {
+            display: none;
         }
 
         .user-name {
@@ -442,6 +470,7 @@
         .faq-section {
             padding: 80px 0;
             background: #000000;
+            scroll-margin-top: 80px;
         }
 
         .faq-header {
@@ -530,6 +559,7 @@
             padding: 60px 0 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             margin-top: 80px;
+            scroll-margin-top: 80px;
         }
 
         .footer-content {
@@ -720,12 +750,17 @@
             <div class="nav-links">
                 <a href="{{ route('dashboard') }}" class="active">Beranda</a>
                 <a href="{{ route('products.index') }}">Template</a>
-                <a href="#">Tentang</a>
-                <a href="#">Kontak</a>
+                <a href="#faq-section" onclick="scrollToSection('faq-section', event)">Tentang</a>
+                <a href="#footer-section" onclick="scrollToSection('footer-section', event)">Kontak</a>
             </div>
 
             <div class="nav-right">
-                <i class="cart-icon">🛒</i>
+                <a href="{{ route('cart') }}" class="cart-icon">
+                    🛒
+                    @if(isset($cartCount) && $cartCount > 0)
+                        <span class="cart-badge">{{ $cartCount }}</span>
+                    @endif
+                </a>
                 
                 @auth
                     <!-- Jika user sudah login -->
@@ -825,7 +860,10 @@
                                     @endif
                                 </div>
                                 <div class="product-actions">
-                                    <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
+                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="action-btn" onclick="event.stopPropagation();">🛒</button>
+                                    </form>
                                     <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
                                 </div>
                             </div>
@@ -871,7 +909,10 @@
                                     @endif
                                 </div>
                                 <div class="product-actions">
-                                    <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">🛒</button>
+                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="action-btn" onclick="event.stopPropagation();">🛒</button>
+                                    </form>
                                     <button class="action-btn" onclick="event.preventDefault(); event.stopPropagation();">👁</button>
                                 </div>
                             </div>
@@ -888,7 +929,7 @@
     </div>
 
     <!-- FAQ Section with Accordion -->
-    <div class="faq-section">
+    <div class="faq-section" id="faq-section">
         <div class="container">
             <div class="faq-header">
                 <h2>Website templates FAQs</h2>
@@ -925,8 +966,7 @@
                         <span class="faq-icon">⌄</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Cara menggunakan tema website cukup mudah.
-                            Pertama, download file template yang sudah kamu beli atau pilih. Kemudian, ekstrak file zip tersebut dan upload ke hosting atau server kamu. Setelah itu, kamu bisa mulai mengkustomisasi konten seperti teks, gambar, logo, dan warna sesuai dengan brand atau kebutuhan bisnis kamu. Sebagian besar template modern sudah dilengkapi dengan panel admin atau page builder yang memudahkan proses editing tanpa perlu coding.</p>
+                        <p>Cara menggunakan tema website cukup mudah. Pertama, download file template yang sudah kamu beli atau pilih. Kemudian, ekstrak file zip tersebut dan upload ke hosting atau server kamu. Setelah itu, kamu bisa mulai mengkustomisasi konten seperti teks, gambar, logo, dan warna sesuai dengan brand atau kebutuhan bisnis kamu. Sebagian besar template modern sudah dilengkapi dengan panel admin atau page builder yang memudahkan proses editing tanpa perlu coding.</p>
                     </div>
                 </div>
 
@@ -1000,7 +1040,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer">
+    <div class="footer" id="footer-section">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
@@ -1051,6 +1091,18 @@
     </div>
 
     <script>
+        // Smooth Scroll to Section
+        function scrollToSection(sectionId, event) {
+            event.preventDefault();
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
         // Toggle FAQ Accordion
         function toggleFAQ(element) {
             const faqItem = element.parentElement;
