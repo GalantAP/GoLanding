@@ -485,6 +485,28 @@
             font-size: 16px;
         }
 
+        /* === DITAMBAHKAN: alert-error sesuai permintaan === */
+        .alert-error {
+            background: rgba(220, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid rgba(220, 0, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(220, 0, 0, 0.2);
+        }
+
+        .alert-error::before {
+            content: '✕';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #dc0000;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
         /* Pagination */
         .pagination {
             display: flex;
@@ -712,11 +734,19 @@
         </div>
     </nav>
 
-    <!-- Alert Messages -->
+    <!-- Alert Messages (DITAMBAHKAN: success & error) -->
     @if(session('success'))
         <div class="container">
             <div class="alert alert-success">
                 {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="container">
+            <div class="alert alert-error">
+                {{ session('error') }}
             </div>
         </div>
     @endif
@@ -913,16 +943,16 @@
             }
         });
 
-        // Auto-hide alert after 5 seconds
+        // Auto-hide alert after 5 seconds (support multiple alerts)
         document.addEventListener('DOMContentLoaded', function() {
-            const alert = document.querySelector('.alert');
-            if (alert) {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
                 setTimeout(() => {
                     alert.style.transition = 'opacity 0.5s';
                     alert.style.opacity = '0';
                     setTimeout(() => alert.remove(), 500);
                 }, 5000);
-            }
+            });
         });
     </script>
 

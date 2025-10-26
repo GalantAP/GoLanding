@@ -645,7 +645,7 @@
             font-size: 13px;
         }
 
-        /* Alert Messages - WARNA MERAH */
+        /* Alert Messages */
         .alert {
             padding: 15px 20px;
             margin: 20px 0;
@@ -659,14 +659,8 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .alert-success {
@@ -675,9 +669,30 @@
             border: 1px solid rgba(220, 0, 0, 0.4);
             box-shadow: 0 4px 15px rgba(220, 0, 0, 0.2);
         }
-
         .alert-success::before {
             content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #dc0000;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* UPDATED per request */
+        .alert-error {
+            background: rgba(220, 0, 0, 0.15);
+            color: #ff0000;
+            border: 1px solid rgba(220, 0, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(220, 0, 0, 0.2);
+        }
+
+        .alert-error::before {
+            content: '✕';
             display: flex;
             align-items: center;
             justify-content: center;
@@ -746,7 +761,7 @@
     <nav class="navbar">
         <div class="container">
             <a href="{{ route('dashboard') }}" class="logo">Go<span>Landing</span></a>
-            
+
             <div class="nav-links">
                 <a href="{{ route('dashboard') }}" class="active">Beranda</a>
                 <a href="{{ route('products.index') }}">Template</a>
@@ -761,7 +776,7 @@
                         <span class="cart-badge">{{ $cartCount }}</span>
                     @endif
                 </a>
-                
+
                 @auth
                     <!-- Jika user sudah login -->
                     <span class="user-name">{{ Auth::user()->name ?? Auth::user()->email }}</span>
@@ -787,19 +802,27 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="container">
+            <div class="alert alert-error">
+                {{ session('error') }}
+            </div>
+        </div>
+    @endif
+
     <!-- Hero Section -->
     <div class="hero">
         <div class="container">
             <h1>Template situs web untuk desainer,<br>perusahaan, dan penggunaan pribadi</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed accumsan tortor malesuada at sodales ut placerat. Praesent vulputate commodo laoreet.</p>
-            
+
             <!-- Search Form -->
             <form action="{{ route('dashboard') }}" method="GET" id="searchForm">
                 <div class="search-bar">
-                    <input type="text" 
-                           name="search" 
-                           id="searchInput" 
-                           class="search-input" 
+                    <input type="text"
+                           name="search"
+                           id="searchInput"
+                           class="search-input"
                            placeholder="🔍 Cari template anda"
                            value="{{ request('search') }}">
                     <input type="hidden" name="category" id="categoryInput" value="{{ request('category', 'all') }}">
@@ -809,14 +832,14 @@
 
             <!-- Category Pills -->
             <div class="category-pills">
-                <span class="pill {{ request('category', 'all') == 'all' ? 'active' : '' }}" 
-                      data-category="all" 
+                <span class="pill {{ request('category', 'all') == 'all' ? 'active' : '' }}"
+                      data-category="all"
                       onclick="filterByCategory('all')">
                     Semua
                 </span>
                 @foreach($categories as $category)
-                    <span class="pill {{ request('category') == $category->name ? 'active' : '' }}" 
-                          data-category="{{ $category->name }}" 
+                    <span class="pill {{ request('category') == $category->name ? 'active' : '' }}"
+                          data-category="{{ $category->name }}"
                           onclick="filterByCategory('{{ $category->name }}')">
                         {{ $category->name }}
                     </span>
@@ -837,7 +860,7 @@
                 @foreach($featuredProducts as $product)
                     <a href="{{ route('products.detail', $product->id) }}" class="product-card">
                         <div class="product-image">
-                            <img src="{{ $product->image }}" 
+                            <img src="{{ $product->image }}"
                                  alt="{{ $product->name }}"
                                  loading="lazy"
                                  onerror="this.onerror=null; this.src='https://placehold.co/800x500/1a0000/dc0000?text={{ urlencode($product->name) }}';">
@@ -886,7 +909,7 @@
                 @foreach($latestProducts as $product)
                     <a href="{{ route('products.detail', $product->id) }}" class="product-card">
                         <div class="product-image">
-                            <img src="{{ $product->image }}" 
+                            <img src="{{ $product->image }}"
                                  alt="{{ $product->name }}"
                                  loading="lazy"
                                  onerror="this.onerror=null; this.src='https://placehold.co/800x500/1a0000/dc0000?text={{ urlencode($product->name) }}';">
@@ -1096,7 +1119,7 @@
             event.preventDefault();
             const section = document.getElementById(sectionId);
             if (section) {
-                section.scrollIntoView({ 
+                section.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
@@ -1108,13 +1131,14 @@
             const faqItem = element.parentElement;
             const faqAnswer = faqItem.querySelector('.faq-answer');
             const isActive = faqItem.classList.contains('active');
-            
+
             // Close all FAQ items
             document.querySelectorAll('.faq-item').forEach(item => {
                 item.classList.remove('active');
-                item.querySelector('.faq-answer').classList.remove('active');
+                const ans = item.querySelector('.faq-answer');
+                if (ans) ans.classList.remove('active');
             });
-            
+
             // Open clicked item if it wasn't active
             if (!isActive) {
                 faqItem.classList.add('active');
@@ -1126,29 +1150,32 @@
         function filterByCategory(category) {
             // Set category value in hidden input
             document.getElementById('categoryInput').value = category;
-            
+
             // Submit form
             document.getElementById('searchForm').submit();
         }
 
         // Search on Enter key
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('searchForm').submit();
-            }
-        });
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('searchForm').submit();
+                }
+            });
+        }
 
-        // Auto-hide alert after 5 seconds
+        // Auto-hide alerts after 5 seconds (support multiple alerts)
         document.addEventListener('DOMContentLoaded', function() {
-            const alert = document.querySelector('.alert');
-            if (alert) {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
                 setTimeout(() => {
                     alert.style.transition = 'opacity 0.5s';
                     alert.style.opacity = '0';
                     setTimeout(() => alert.remove(), 500);
                 }, 5000);
-            }
+            });
         });
     </script>
 
